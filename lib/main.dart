@@ -8,7 +8,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Coin Jar',
       theme: ThemeData(
         primarySwatch: Colors.green,
         scaffoldBackgroundColor: Colors.black,
@@ -34,21 +34,111 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  double _balance = 0.01;
-  final myController = TextEditingController();
+  double _balance = 0.00;
+  final amountTextFieldController = TextEditingController();
 
-  void _updateBalance(bool spend) {
-    double amount = double.tryParse(myController.text);
+  @override
+  void dispose() {
+    amountTextFieldController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Spacer(flex: 12),
+            Text(
+              '${_balance.toStringAsFixed(2)}',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 60,
+                  fontWeight: FontWeight.w400),
+            ),
+            Spacer(flex: 2),
+            ElevatedButton(
+              child: SizedBox(
+                child: Row(
+                  children: [
+                    Text(
+                      '+',
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.w300),
+                    ),
+                    Spacer(
+                      flex: 1,
+                    ),
+                    Text(
+                      'Add To Balance',
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+                    ),
+                    Spacer(
+                      flex: 1,
+                    ),
+                  ],
+                ),
+                width: MediaQuery.of(context).size.width * 0.4,
+                height: 40,
+              ),
+              onPressed: () => showBottomSheet(context, false),
+            ),
+            Spacer(flex: 1),
+            ElevatedButton(
+              child: SizedBox(
+                child: Row(
+                  children: [
+                    Text(
+                      '\$',
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+                    ),
+                    Spacer(
+                      flex: 1,
+                    ),
+                    Text(
+                      'Spend',
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+                    ),
+                    Spacer(
+                      flex: 1,
+                    ),
+                  ],
+                ),
+                width: MediaQuery.of(context).size.width * 0.4,
+                height: 40,
+              ),
+              onPressed: () => showBottomSheet(context, true),
+            ),
+            Spacer(flex: 12),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void updateBalance(bool spend) {
+    double amount = double.tryParse(amountTextFieldController.text);
 
     if (amount == null) {
-      _showMessageDialog('Error', 'Invalid number was entered.', this.context);
+      showMessageDialog('Error', 'Invalid number was entered.', this.context);
       return;
-    } else {
-      amount = amount.abs();
     }
 
-    if (spend) {
-      amount *= -1.0;
+    if (amount < 0) {
+      showMessageDialog('Error', 'Amount must be less than 0.', this.context);
+      return;
     }
 
     setState(() {
@@ -56,7 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _showMessageDialog(String title, String message, BuildContext context) {
+  void showMessageDialog(String title, String message, BuildContext context) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -75,14 +165,8 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
-  @override
-  void dispose() {
-    myController.dispose();
-    super.dispose();
-  }
-
-  void displayBottomSheet(BuildContext context, bool spend) {
-    myController.text = '';
+  void showBottomSheet(BuildContext context, bool spend) {
+    amountTextFieldController.text = '';
     showModalBottomSheet(
         context: context,
         builder: (context) {
@@ -102,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         Spacer(flex: 1),
                         Container(
                           child: TextField(
-                            controller: myController,
+                            controller: amountTextFieldController,
                             decoration: InputDecoration(
                               contentPadding:
                                   EdgeInsets.only(left: 10, top: 10),
@@ -151,7 +235,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             width: MediaQuery.of(context).size.width * 0.3,
                             height: 50,
                           ),
-                          onPressed: () => {_updateBalance(spend)},
+                          onPressed: () => {updateBalance(spend)},
                         ),
                         Spacer(flex: 1),
                       ],
@@ -173,90 +257,5 @@ class _MyHomePageState extends State<MyHomePage> {
             color: Colors.black,
           );
         });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Spacer(flex: 12),
-            Text(
-              '${_balance.toStringAsFixed(2)}',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 60,
-                  fontWeight: FontWeight.w400),
-            ),
-            Spacer(flex: 2),
-            ElevatedButton(
-              child: SizedBox(
-                child: Row(
-                  children: [
-                    Text(
-                      '+',
-                      textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.w300),
-                    ),
-                    Spacer(
-                      flex: 3,
-                    ),
-                    Text(
-                      'ADD TO BALANCE',
-                      textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-                    ),
-                    Spacer(
-                      flex: 1,
-                    ),
-                  ],
-                ),
-                width: MediaQuery.of(context).size.width * 0.4,
-                height: 40,
-              ),
-              onPressed: () => displayBottomSheet(context, false),
-            ),
-            Spacer(flex: 1),
-            ElevatedButton(
-              child: SizedBox(
-                child: Row(
-                  children: [
-                    Text(
-                      '\$',
-                      textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-                    ),
-                    Spacer(
-                      flex: 1,
-                    ),
-                    Text(
-                      'SPEND',
-                      textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-                    ),
-                    Spacer(
-                      flex: 1,
-                    ),
-                  ],
-                ),
-                width: MediaQuery.of(context).size.width * 0.4,
-                height: 40,
-              ),
-              onPressed: () => displayBottomSheet(context, true),
-            ),
-            Spacer(flex: 12),
-          ],
-        ),
-      ),
-    );
   }
 }
