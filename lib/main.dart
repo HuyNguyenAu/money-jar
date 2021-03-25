@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 
 void main() {
@@ -7,13 +5,12 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.lightGreen,
+        primarySwatch: Colors.green,
         scaffoldBackgroundColor: Colors.black,
         primaryColor: Colors.black,
         brightness: Brightness.dark,
@@ -30,15 +27,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -46,15 +34,55 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  double _counter = 0.01;
+  double _balance = 0.01;
+  final myController = TextEditingController();
 
-  void _incrementCounter() {
+  void _updateBalance(bool spend) {
+    double amount = double.tryParse(myController.text);
+
+    if (amount == null) {
+      _showMessageDialog('Error', 'Invalid number was entered.', this.context);
+      return;
+    } else {
+      amount = amount.abs();
+    }
+
+    if (spend) {
+      amount *= -1.0;
+    }
+
     setState(() {
-      _counter++;
+      _balance += amount;
     });
   }
 
+  void _showMessageDialog(String title, String message, BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(title),
+            content: Text(message),
+            actions: [
+              TextButton(
+                child: Text('Ok'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        });
+  }
+
+  @override
+  void dispose() {
+    myController.dispose();
+    super.dispose();
+  }
+
   void displayBottomSheet(BuildContext context, bool spend) {
+    myController.text = '';
     showModalBottomSheet(
         context: context,
         builder: (context) {
@@ -72,47 +100,59 @@ class _MyHomePageState extends State<MyHomePage> {
                     Row(
                       children: [
                         Spacer(flex: 1),
-                        SizedBox(
+                        Container(
                           child: TextField(
+                            controller: myController,
                             decoration: InputDecoration(
-                                hintText:
-                                    spend ? 'Amount Spent' : 'Amount To Add'),
+                              contentPadding:
+                                  EdgeInsets.only(left: 10, top: 10),
+                              labelText:
+                                  spend ? 'Amount Spent' : 'Amount To Add',
+                            ),
                             keyboardType: TextInputType.number,
                           ),
-                          width: MediaQuery.of(context).size.width * 0.5,
+                          width: MediaQuery.of(context).size.width * 0.4,
                           height: 50,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10.0),
+                                topRight: Radius.circular(10.0)),
+                            color: Colors.grey[850],
+                          ),
                         ),
                         Spacer(flex: 1),
                         ElevatedButton(
-                            onPressed: () => {},
-                            child: SizedBox(
-                              child: Row(
-                                children: [
-                                  Text(
-                                    spend ? '\$' : '+',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.w300),
-                                  ),
-                                  Spacer(
-                                    flex: 3,
-                                  ),
-                                  Text(
-                                    spend ? 'Pay' : 'Add Funds',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w300),
-                                  ),
-                                  Spacer(
-                                    flex: 1,
-                                  ),
-                                ],
-                              ),
-                              width: MediaQuery.of(context).size.width * 0.242,
-                              height: 50,
-                            )),
+                          child: SizedBox(
+                            child: Row(
+                              children: [
+                                Text(
+                                  spend ? '\$' : '+',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w300),
+                                ),
+                                Spacer(
+                                  flex: 1,
+                                ),
+                                Text(
+                                  spend ? 'Pay' : 'Add Funds',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w300),
+                                ),
+                                Spacer(
+                                  flex: 1,
+                                ),
+                              ],
+                            ),
+                            width: MediaQuery.of(context).size.width * 0.3,
+                            height: 50,
+                          ),
+                          onPressed: () => {_updateBalance(spend)},
+                        ),
                         Spacer(flex: 1),
                       ],
                     ),
@@ -122,10 +162,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                 ),
               ),
-              decoration: new BoxDecoration(
-                borderRadius: new BorderRadius.only(
-                    topLeft: const Radius.circular(20.0),
-                    topRight: const Radius.circular(20.0)),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20.0),
+                    topRight: Radius.circular(20.0)),
                 color: Colors.grey[900],
               ),
             ),
@@ -147,8 +187,11 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             Spacer(flex: 12),
             Text(
-              '\$${_counter.toStringAsFixed(2)}',
-              style: Theme.of(context).textTheme.headline2,
+              '${_balance.toStringAsFixed(2)}',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 60,
+                  fontWeight: FontWeight.w400),
             ),
             Spacer(flex: 2),
             ElevatedButton(
