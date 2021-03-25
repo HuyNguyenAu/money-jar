@@ -19,22 +19,40 @@ class MyApp extends StatelessWidget {
         accentIconTheme: IconThemeData(color: Colors.black),
         dividerColor: Colors.black12,
       ),
-      home: MyHomePage(title: 'Coin Jars'),
+      home: CoinJarPage(
+        title: 'HECS',
+      ),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+class HomePage extends StatefulWidget {
+  HomePage({Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  double _balance = 0.00;
+class CoinJarPage extends StatefulWidget {
+  CoinJarPage({Key key, this.title}) : super(key: key);
+
+  final String title;
+
+  @override
+  CoinJarPageState createState() => CoinJarPageState();
+}
+
+class HomePageState extends State<HomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold();
+  }
+}
+
+class CoinJarPageState extends State<CoinJarPage> {
+  double balance = 0;
   final amountTextFieldController = TextEditingController();
 
   @override
@@ -55,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             Spacer(flex: 12),
             Text(
-              '${_balance.toStringAsFixed(2)}',
+              '${balance.toStringAsFixed(2)}',
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 60,
@@ -142,7 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     setState(() {
-      _balance += amount;
+      balance += amount;
     });
   }
 
