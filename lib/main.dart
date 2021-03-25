@@ -13,9 +13,16 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.lightGreen,
+        scaffoldBackgroundColor: Colors.black,
+        primaryColor: Colors.black,
+        brightness: Brightness.dark,
+        backgroundColor: Colors.black,
+        accentColor: Colors.white,
+        accentIconTheme: IconThemeData(color: Colors.black),
+        dividerColor: Colors.black12,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Coin Jars'),
     );
   }
 }
@@ -43,41 +50,108 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
       _counter++;
     });
   }
 
+  void displayBottomSheet(BuildContext context, bool spend) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            child: Container(
+              child: Center(
+                child: Column(
+                  children: [
+                    Spacer(flex: 1),
+                    Text(
+                      spend ? 'Pay with Wallet' : 'Add Funds',
+                      style: Theme.of(context).textTheme.headline5,
+                    ),
+                    Spacer(flex: 1),
+                    Row(
+                      children: [
+                        Spacer(flex: 1),
+                        SizedBox(
+                          child: TextField(
+                            decoration: InputDecoration(
+                                hintText:
+                                    spend ? 'Amount Spent' : 'Amount To Add'),
+                            keyboardType: TextInputType.number,
+                          ),
+                          width: MediaQuery.of(context).size.width * 0.5,
+                          height: 50,
+                        ),
+                        Spacer(flex: 1),
+                        ElevatedButton(
+                            onPressed: () => {},
+                            child: SizedBox(
+                              child: Row(
+                                children: [
+                                  Text(
+                                    spend ? '\$' : '+',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w300),
+                                  ),
+                                  Spacer(
+                                    flex: 3,
+                                  ),
+                                  Text(
+                                    spend ? 'Pay' : 'Add Funds',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w300),
+                                  ),
+                                  Spacer(
+                                    flex: 1,
+                                  ),
+                                ],
+                              ),
+                              width: MediaQuery.of(context).size.width * 0.242,
+                              height: 50,
+                            )),
+                        Spacer(flex: 1),
+                      ],
+                    ),
+                    Spacer(flex: 1),
+                  ],
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                ),
+              ),
+              decoration: new BoxDecoration(
+                borderRadius: new BorderRadius.only(
+                    topLeft: const Radius.circular(20.0),
+                    topRight: const Radius.circular(20.0)),
+                color: Colors.grey[900],
+              ),
+            ),
+            height: MediaQuery.of(context).size.height * 0.2,
+            color: Colors.black,
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Spacer(flex: 25),
+            Spacer(flex: 12),
             Text(
               '\$${_counter.toStringAsFixed(2)}',
               style: Theme.of(context).textTheme.headline2,
             ),
             Spacer(flex: 2),
             ElevatedButton(
-              onPressed: () {},
               child: SizedBox(
                 child: Row(
                   children: [
@@ -88,7 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           TextStyle(fontSize: 22, fontWeight: FontWeight.w300),
                     ),
                     Spacer(
-                      flex: 1,
+                      flex: 3,
                     ),
                     Text(
                       'ADD TO BALANCE',
@@ -101,13 +175,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ],
                 ),
-                width: MediaQuery.of(context).size.width * 0.40,
+                width: MediaQuery.of(context).size.width * 0.4,
                 height: 40,
               ),
+              onPressed: () => displayBottomSheet(context, false),
             ),
             Spacer(flex: 1),
             ElevatedButton(
-              onPressed: () {},
               child: SizedBox(
                 child: Row(
                   children: [
@@ -131,11 +205,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ],
                 ),
-                width: MediaQuery.of(context).size.width * 0.40,
+                width: MediaQuery.of(context).size.width * 0.4,
                 height: 40,
               ),
+              onPressed: () => displayBottomSheet(context, true),
             ),
-            Spacer(flex: 25),
+            Spacer(flex: 12),
           ],
         ),
       ),
