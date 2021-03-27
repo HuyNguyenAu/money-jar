@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'widgets.dart';
 import 'coin_jar.dart';
+import 'jar.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -12,18 +13,8 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  final List<Map<String, String>> jars = <Map<String, String>>[
-    {
-      'Name': 'HECS',
-      'Balance': '10',
-      'Goal': '100',
-    },
-    {
-      'Name': 'Rego',
-      'Balance': '50',
-      'Goal': '100',
-    },
-  ];
+  final textFieldController = TextEditingController();
+  List<Jar> jars = [];
 
   @override
   Widget build(BuildContext context) {
@@ -44,19 +35,19 @@ class HomePageState extends State<HomePage> {
                       ListTile(
                         title: Row(
                           children: [
-                            Text('${jars[index]['Name']}'),
+                            Text(jars[index].name),
                             Text(
-                                '\$${jars[index]['Balance']} \/ ${jars[index]['Goal']}'),
+                                '\$${jars[index].balance} \/ ${jars[index].goal}'),
                           ],
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         ),
                         subtitle: Column(
                           children: [
                             LinearProgressIndicator(
-                              value: (double.tryParse(jars[index]['Balance']) ??
-                                      0) /
-                                  (double.tryParse(jars[index]['Goal']) ?? 1),
-                            ),
+                                value: jars[index].balance /
+                                    (jars[index].goal == 0
+                                        ? 1
+                                        : jars[index].goal)),
                           ],
                         ),
                       )
@@ -67,12 +58,22 @@ class HomePageState extends State<HomePage> {
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => CoinJarPage(
-                          title: jars[index]['Name'],
+                          title: jars[index].name,
                         )));
               },
             );
           },
           separatorBuilder: (BuildContext context, int index) => Divider(),
-        )));
+        )),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () {
+            Widgets.showTextBottomModal('Create New Jar', 'Create', () {
+              setState(() {
+                jars.add(Jar(textFieldController.text, 0, 0));
+              });
+            }, textFieldController, context);
+          },
+        ));
   }
 }

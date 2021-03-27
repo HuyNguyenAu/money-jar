@@ -10,9 +10,9 @@ class Widgets {
     return _buttonBase(text, action, context, 0.33);
   }
 
-  static largeTextField(
+  static largeTextField(TextInputType inputType,
       TextEditingController controller, BuildContext context) {
-    return _textFieldBase(controller, context, 0.8);
+    return _textFieldBase(inputType, controller, context, 0.8);
   }
 
   static showMessageDialog(String title, String message, BuildContext context) {
@@ -34,8 +34,33 @@ class Widgets {
         });
   }
 
-  static showBottomModal(String title, String buttonText, VoidCallback action,
-      TextEditingController controller, BuildContext context) {
+  static showNumberBottomModal(
+      String title,
+      String buttonText,
+      VoidCallback action,
+      TextEditingController controller,
+      BuildContext context) {
+    return _showBottomModal(
+        title, buttonText, action, controller, TextInputType.number, context);
+  }
+
+  static showTextBottomModal(
+      String title,
+      String buttonText,
+      VoidCallback action,
+      TextEditingController controller,
+      BuildContext context) {
+    return _showBottomModal(
+        title, buttonText, action, controller, TextInputType.text, context);
+  }
+
+  static _showBottomModal(
+      String title,
+      String buttonText,
+      VoidCallback action,
+      TextEditingController controller,
+      TextInputType inputType,
+      BuildContext context) {
     controller.text = '';
     return showModalBottomSheet(
         context: context,
@@ -51,7 +76,7 @@ class Widgets {
                       style: Theme.of(context).textTheme.headline5,
                     ),
                     Spacer(flex: 1),
-                    Widgets.largeTextField(controller, context),
+                    Widgets.largeTextField(inputType, controller, context),
                     Spacer(flex: 1),
                     Widgets.smallButton(buttonText, action, context),
                     Spacer(flex: 1),
@@ -69,7 +94,7 @@ class Widgets {
         });
   }
 
-  static Container _textFieldBase(
+  static Container _textFieldBase(TextInputType inputType,
       TextEditingController controller, BuildContext context, double scale) {
     return Container(
       child: TextField(
@@ -82,7 +107,7 @@ class Widgets {
               borderRadius: BorderRadius.all(Radius.circular(100)),
               borderSide: new BorderSide(color: Colors.blue)),
         ),
-        keyboardType: TextInputType.number,
+        keyboardType: inputType,
       ),
       width: MediaQuery.of(context).size.width * scale,
       height: 55,

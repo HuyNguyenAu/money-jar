@@ -122,13 +122,13 @@ class CoinJarPageState extends State<CoinJarPage> {
           ),
           Spacer(flex: 2),
           Widgets.largeButton('Deposit', () {
-            Widgets.showBottomModal('Deposit Funds', 'Deposit', () {
+            Widgets.showNumberBottomModal('Deposit Funds', 'Deposit', () {
               updateBalance(false, controller, context);
             }, controller, context);
           }, context),
           Spacer(flex: 1),
           Widgets.largeButton('Spend', () {
-            Widgets.showBottomModal('Pay With Funds', 'Pay', () {
+            Widgets.showNumberBottomModal('Pay With Funds', 'Pay', () {
               updateBalance(true, controller, context);
             }, controller, context);
           }, context),
@@ -150,7 +150,7 @@ class CoinJarPageState extends State<CoinJarPage> {
           ),
           Spacer(flex: 2),
           Widgets.largeButton('Adjust', () {
-            Widgets.showBottomModal('Adjust Goal', 'Adjust', () {
+            Widgets.showNumberBottomModal('Adjust Goal', 'Adjust', () {
               updateGoal(controller, context);
             }, controller, context);
           }, context),
