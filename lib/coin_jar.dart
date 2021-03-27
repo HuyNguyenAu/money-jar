@@ -11,42 +11,51 @@ class CoinJarPage extends StatefulWidget {
 }
 
 class CoinJarPageState extends State<CoinJarPage> {
+  final textFieldController = TextEditingController();
   double balance = 0;
-  final amountTextFieldController = TextEditingController();
+  double goal = 0;
+  int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> pages = [
+      accountWidget(textFieldController, context),
+      goalWidget(textFieldController, context)
+    ];
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Spacer(flex: 12),
-            Text(
-              '${balance.toStringAsFixed(2)}',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 60,
-                  fontWeight: FontWeight.w400),
-            ),
-            Spacer(flex: 2),
-            Widgets.largeButton(
-                'Deposit', () => {showBottomSheet(context, false)}, context),
-            Spacer(flex: 1),
-            Widgets.largeButton(
-                'Spend', () => {showBottomSheet(context, true)}, context),
-            Spacer(flex: 12),
-          ],
-        ),
+      body: pages[currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.attach_money), label: 'Account'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.account_balance), label: 'Goal'),
+        ],
+        onTap: (index) => {
+          setState(() {
+            currentIndex = index;
+          })
+        },
+        currentIndex: currentIndex,
+        backgroundColor: Colors.grey[900],
+        selectedItemColor: Colors.green,
       ),
     );
   }
 
-  void updateBalance(bool spend, BuildContext context) {
-    double amount = double.tryParse(amountTextFieldController.text);
+  void onItemTapped(int index) {
+    setState(() {
+      currentIndex = index;
+    });
+  }
+
+  void updateBalance(
+      bool spend, TextEditingController controller, BuildContext context) {
+    double amount = double.tryParse(controller.text);
 
     if (amount == null) {
       Widgets.showMessageDialog(
@@ -60,6 +69,11 @@ class CoinJarPageState extends State<CoinJarPage> {
 
     if (spend) {
       amount *= -1;
+
+      if ((balance + amount) < 0) {
+        Widgets.showMessageDialog('Error', 'Insuffiencent funds.', context);
+        return;
+      }
     }
 
     setState(() {
@@ -67,18 +81,97 @@ class CoinJarPageState extends State<CoinJarPage> {
     });
   }
 
-  void showBottomSheet(BuildContext context, bool spend) {
-    Widgets.showBottomModal(
-        spend ? 'Pay With Funds' : 'Deposit Funds',
-        spend ? 'Pay' : 'Deposit',
-        () => {updateBalance(spend, context)},
-        amountTextFieldController,
-        context);
+  void updateGoal(TextEditingController controller, BuildContext context) {
+    double amount = double.tryParse(controller.text);
+
+    if (amount == null) {
+      Widgets.showMessageDialog(
+          'Error', 'Invalid number was entered.', context);
+      return;
+    } else if (amount <= 0) {
+      Widgets.showMessageDialog(
+          'Error', 'Amount must be greater than 0.', context);
+      return;
+    }
+
+    setState(() {
+      goal = amount;
+    });
+  }
+
+  Center accountWidget(TextEditingController controller, BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Spacer(flex: 12),
+          Text(
+            '${balance.toStringAsFixed(2)}',
+            style: TextStyle(
+                color: Colors.white, fontSize: 60, fontWeight: FontWeight.w400),
+          ),
+          Spacer(flex: 2),
+          Widgets.largeButton(
+              'Deposit',
+              () => {
+                    Widgets.showBottomModal(
+                        'Deposit Funds',
+                        'Deposit',
+                        () => {updateBalance(false, controller, context)},
+                        controller,
+                        context)
+                  },
+              context),
+          Spacer(flex: 1),
+          Widgets.largeButton(
+              'Spend',
+              () => {
+                    Widgets.showBottomModal(
+                        'Pay With Funds',
+                        'Pay',
+                        () => {updateBalance(true, controller, context)},
+                        controller,
+                        context)
+                  },
+              context),
+          Spacer(flex: 12),
+        ],
+      ),
+    );
+  }
+
+  Center goalWidget(TextEditingController controller, BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Spacer(flex: 12),
+          Text(
+            '${goal.toStringAsFixed(2)}',
+            style: TextStyle(
+                color: Colors.white, fontSize: 60, fontWeight: FontWeight.w400),
+          ),
+          Spacer(flex: 2),
+          Widgets.largeButton(
+              'Adjust',
+              () => {
+                    Widgets.showBottomModal(
+                        'Adjust Goal',
+                        'Adjust',
+                        () => {updateGoal(controller, context)},
+                        controller,
+                        context)
+                  },
+              context),
+          Spacer(flex: 12),
+        ],
+      ),
+    );
   }
 
   @override
   void dispose() {
-    amountTextFieldController.dispose();
+    textFieldController.dispose();
     super.dispose();
   }
 }
