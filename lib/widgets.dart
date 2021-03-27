@@ -62,11 +62,9 @@ class Widgets {
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20.0),
                     topRight: Radius.circular(20.0)),
-                color: Colors.grey[900],
               ),
             ),
             height: MediaQuery.of(context).size.height * 0.3,
-            color: Colors.black,
           );
         });
   }
@@ -80,8 +78,9 @@ class Widgets {
         textAlignVertical: TextAlignVertical.center,
         controller: controller,
         decoration: InputDecoration(
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
+          border: new OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(100)),
+              borderSide: new BorderSide(color: Colors.blue)),
         ),
         keyboardType: TextInputType.number,
       ),
@@ -90,7 +89,6 @@ class Widgets {
       decoration: BoxDecoration(
         shape: BoxShape.rectangle,
         borderRadius: BorderRadius.all(Radius.circular(100)),
-        color: Colors.grey[850],
       ),
     );
   }

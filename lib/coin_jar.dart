@@ -26,6 +26,19 @@ class CoinJarPageState extends State<CoinJarPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: [
+          Padding(
+              padding: EdgeInsets.only(right: 20.0),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pop();
+                },
+                child: Icon(
+                  Icons.delete,
+                  size: 26.0,
+                ),
+              )),
+        ],
       ),
       body: pages[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -41,8 +54,6 @@ class CoinJarPageState extends State<CoinJarPage> {
           })
         },
         currentIndex: currentIndex,
-        backgroundColor: Colors.grey[900],
-        selectedItemColor: Colors.green,
       ),
     );
   }
@@ -107,33 +118,20 @@ class CoinJarPageState extends State<CoinJarPage> {
           Spacer(flex: 12),
           Text(
             '${balance.toStringAsFixed(2)}',
-            style: TextStyle(
-                color: Colors.white, fontSize: 60, fontWeight: FontWeight.w400),
+            style: TextStyle(fontSize: 60, fontWeight: FontWeight.w400),
           ),
           Spacer(flex: 2),
-          Widgets.largeButton(
-              'Deposit',
-              () => {
-                    Widgets.showBottomModal(
-                        'Deposit Funds',
-                        'Deposit',
-                        () => {updateBalance(false, controller, context)},
-                        controller,
-                        context)
-                  },
-              context),
+          Widgets.largeButton('Deposit', () {
+            Widgets.showBottomModal('Deposit Funds', 'Deposit', () {
+              updateBalance(false, controller, context);
+            }, controller, context);
+          }, context),
           Spacer(flex: 1),
-          Widgets.largeButton(
-              'Spend',
-              () => {
-                    Widgets.showBottomModal(
-                        'Pay With Funds',
-                        'Pay',
-                        () => {updateBalance(true, controller, context)},
-                        controller,
-                        context)
-                  },
-              context),
+          Widgets.largeButton('Spend', () {
+            Widgets.showBottomModal('Pay With Funds', 'Pay', () {
+              updateBalance(true, controller, context);
+            }, controller, context);
+          }, context),
           Spacer(flex: 12),
         ],
       ),
@@ -148,21 +146,14 @@ class CoinJarPageState extends State<CoinJarPage> {
           Spacer(flex: 12),
           Text(
             '${goal.toStringAsFixed(2)}',
-            style: TextStyle(
-                color: Colors.white, fontSize: 60, fontWeight: FontWeight.w400),
+            style: TextStyle(fontSize: 60, fontWeight: FontWeight.w400),
           ),
           Spacer(flex: 2),
-          Widgets.largeButton(
-              'Adjust',
-              () => {
-                    Widgets.showBottomModal(
-                        'Adjust Goal',
-                        'Adjust',
-                        () => {updateGoal(controller, context)},
-                        controller,
-                        context)
-                  },
-              context),
+          Widgets.largeButton('Adjust', () {
+            Widgets.showBottomModal('Adjust Goal', 'Adjust', () {
+              updateGoal(controller, context);
+            }, controller, context);
+          }, context),
           Spacer(flex: 12),
         ],
       ),
